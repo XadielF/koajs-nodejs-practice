@@ -4,6 +4,9 @@ const views = require("koa-views");
 const serve = require("koa-static");
 const path = require("path");
 const config = require("config");
+const DataLoader = require("./app/dataLoader");
+const Router = require('koa-router')
+const router = new Router()
 
 app.use(
   views(
@@ -22,5 +25,12 @@ app.use(async (ctx, next) => {
 
 const port = process.env.PORT || config.get("server.port");
 app.listen(port, () => {
-  console.log('Applicaiton started - listening on port ${port}');
+  console.log("Applicaiton started - listening on port ${port}");
 });
+
+const productsLoader = new DataLoader(
+  path.join(__dirname, config.get("data.path"), "products")
+);
+
+loadRoutes(routes, productsLoader)
+app.use(router.routes())
